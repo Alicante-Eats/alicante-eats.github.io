@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alicante Eats - Analiza restaurantes de Alicante</title>
+    <meta name="description" content="Explora y analiza mas de 54,000 platos de 810 restaurantes de Alicante. Datos de Glovo y UberEats.">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Alicante Eats">
+    <meta property="og:description" content="Analiza 54,000+ platos de restaurantes de Alicante">
+    <meta property="og:type" content="website">
+
+    <!-- Preload data -->
+    <link rel="preload" href="data/items.json" as="fetch" crossorigin>
+    <link rel="preload" href="data/stores-index.json" as="fetch" crossorigin>
+    <link rel="preload" href="data/stats.json" as="fetch" crossorigin>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4/dist/chart.umd.min.js" defer></script>
+    <!-- Fuse.js para busqueda fuzzy -->
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0/dist/fuse.min.js" defer></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1>Alicante Eats</h1>
+            <p class="subtitle">Analiza <span id="total-items">--</span> platos de <span id="total-stores">--</span> restaurantes</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Stats Cards -->
+        <section class="stats-cards">
+            <div class="card">
+                <span class="card-icon">&#127869;</span>
+                <h3>Total Items</h3>
+                <p class="stat-value" id="stat-total">--</p>
+            </div>
+            <div class="card">
+                <span class="card-icon">&#128176;</span>
+                <h3>Precio Promedio</h3>
+                <p class="stat-value" id="stat-avg">--</p>
+            </div>
+            <div class="card">
+                <span class="card-icon">&#128200;</span>
+                <h3>Rango de Precios</h3>
+                <p class="stat-value" id="stat-range">--</p>
+            </div>
+            <div class="card">
+                <span class="card-icon">&#127978;</span>
+                <h3>Restaurantes</h3>
+                <p class="stat-value" id="stat-stores">--</p>
+            </div>
+        </section>
+
+        <!-- Search and Filters -->
+        <section class="search-filters">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Buscar plato o restaurante..." autocomplete="off">
+                <span class="search-icon">&#128269;</span>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="filter-store">Restaurante</label>
+                    <select id="filter-store">
+                        <option value="">Todos los restaurantes</option>
+                    </select>
+                </div>
+
+                <div class="filter-group price-range">
+                    <label>Precio (EUR)</label>
+                    <div class="price-inputs">
+                        <input type="number" id="filter-min-price" placeholder="Min" min="0" step="0.5">
+                        <span class="separator">-</span>
+                        <input type="number" id="filter-max-price" placeholder="Max" min="0" step="0.5">
+                    </div>
+                </div>
+
+                <button id="btn-clear-filters" class="btn-secondary">Limpiar filtros</button>
+            </div>
+        </section>
+
+        <!-- Results Info -->
+        <section class="results-info">
+            <p>Mostrando <strong id="results-count">--</strong> resultados</p>
+        </section>
+
+        <!-- Data Table -->
+        <section class="table-section">
+            <div class="table-container">
+                <table id="items-table">
+                    <thead>
+                        <tr>
+                            <th data-sort="name">Nombre <span class="sort-icon"></span></th>
+                            <th data-sort="description" class="hide-mobile">Descripcion <span class="sort-icon"></span></th>
+                            <th data-sort="price">Precio <span class="sort-icon"></span></th>
+                            <th data-sort="store">Restaurante <span class="sort-icon"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Rendered dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <button id="btn-prev" disabled>&#8592; Anterior</button>
+                <span id="page-info">Pagina 1 de 1</span>
+                <button id="btn-next">Siguiente &#8594;</button>
+            </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="charts-section">
+            <h2>Visualizaciones</h2>
+
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <canvas id="chart-histogram"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-top-stores"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-avg-price"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Lists -->
+        <section class="top-lists">
+            <div class="top-list">
+                <h3>&#128184; Platos mas caros</h3>
+                <ol id="list-expensive"></ol>
+            </div>
+            <div class="top-list">
+                <h3>&#128181; Platos mas baratos</h3>
+                <ol id="list-cheapest"></ol>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>Datos extraidos de Glovo y UberEats | Ultima actualizacion: Enero 2026</p>
+            <p><a href="https://github.com/alicante-eats" target="_blank">GitHub</a></p>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Cargando datos...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/data-loader.js"></script>
+    <script src="js/table.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
