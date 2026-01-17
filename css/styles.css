@@ -305,6 +305,66 @@ a:hover {
     color: white;
 }
 
+/* === Favorites === */
+.btn-favorites {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color);
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all var(--transition);
+    white-space: nowrap;
+}
+
+.btn-favorites:hover {
+    border-color: #e74c3c;
+    color: #e74c3c;
+}
+
+.btn-favorites.active {
+    background: #e74c3c;
+    border-color: #e74c3c;
+    color: white;
+}
+
+.btn-favorites svg {
+    flex-shrink: 0;
+}
+
+.btn-fav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all var(--transition);
+}
+
+.btn-fav:hover {
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+}
+
+.btn-fav.is-favorite {
+    color: #e74c3c;
+}
+
+.btn-fav.is-favorite:hover {
+    color: #c0392b;
+}
+
 /* === Results Info === */
 .results-info {
     padding: 0.75rem 0;
@@ -356,6 +416,21 @@ a:hover {
     background: var(--secondary-color);
 }
 
+#items-table th.col-fav,
+#items-table td.col-fav {
+    width: 40px;
+    padding: 0.5rem;
+    text-align: center;
+}
+
+#items-table th.col-fav {
+    cursor: default;
+}
+
+#items-table th.col-fav:hover {
+    background: var(--secondary-dark);
+}
+
 #items-table th .sort-icon {
     margin-left: 0.5rem;
     opacity: 0.5;
@@ -379,13 +454,13 @@ a:hover {
     background: rgba(69, 123, 157, 0.05);
 }
 
-#items-table td:nth-child(3) {
+#items-table td:nth-child(4) {
     font-weight: 600;
     color: var(--primary-color);
     white-space: nowrap;
 }
 
-#items-table td:nth-child(2) {
+#items-table td:nth-child(3) {
     max-width: 300px;
     overflow: hidden;
     text-overflow: ellipsis;

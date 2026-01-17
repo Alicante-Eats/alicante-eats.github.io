@@ -45,24 +45,52 @@ class TableManager {
         if (pageData.length === 0) {
             this.tableBody.innerHTML = `
                 <tr>
-                    <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">
                         No se encontraron resultados
                     </td>
                 </tr>
             `;
         } else {
-            this.tableBody.innerHTML = pageData.map(item => `
-                <tr>
+            this.tableBody.innerHTML = pageData.map(item => {
+                const isFav = window.favoritesManager && window.favoritesManager.isFavorite(item.id);
+                return `
+                <tr data-id="${item.id}">
+                    <td class="col-fav">
+                        <button class="btn-fav ${isFav ? 'is-favorite' : ''}" data-id="${item.id}" title="${isFav ? 'Quitar de favoritos' : 'Añadir a favoritos'}">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                    </td>
                     <td>${this.escapeHtml(item.name)}</td>
                     <td class="hide-mobile">${this.escapeHtml(item.description || '-')}</td>
                     <td>${item.price.toFixed(2)} EUR</td>
                     <td>${this.escapeHtml(item.store)}</td>
                 </tr>
-            `).join('');
+            `}).join('');
+
+            // Añadir event listeners a los botones de favoritos
+            this.tableBody.querySelectorAll('.btn-fav').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const itemId = parseInt(btn.dataset.id, 10);
+                    this.toggleFavorite(btn, itemId);
+                });
+            });
         }
 
         this.updatePagination();
         this.updateResultsCount();
+    }
+
+    /**
+     * Toggle favorito y actualiza boton
+     */
+    toggleFavorite(btn, itemId) {
+        const isFav = window.favoritesManager.toggle(itemId);
+        btn.classList.toggle('is-favorite', isFav);
+        btn.title = isFav ? 'Quitar de favoritos' : 'Añadir a favoritos';
+        btn.querySelector('svg').setAttribute('fill', isFav ? 'currentColor' : 'none');
     }
 
     /**

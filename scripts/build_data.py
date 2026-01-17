@@ -59,6 +59,10 @@ def main():
             except (ValueError, KeyError):
                 continue
 
+            # Filtrar outliers (precios > 300€)
+            if price > 300:
+                continue
+
             items.append({
                 "id": idx,
                 "name": row.get("name", "").strip(),
@@ -67,7 +71,7 @@ def main():
                 "store": row.get("store", "").strip()
             })
 
-    print(f"Total items procesados: {len(items)}")
+    print(f"Total items procesados: {len(items)} (filtrados > 300€)")
 
     # Crear indice de tiendas
     stores_index = {}

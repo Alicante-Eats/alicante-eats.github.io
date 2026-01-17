@@ -10,7 +10,8 @@
     let appState = {
         items: [],
         filteredItems: [],
-        isLoading: true
+        isLoading: true,
+        showingFavorites: false
     };
 
     /**
@@ -35,6 +36,9 @@
 
             // Configurar listeners
             setupEventListeners();
+
+            // Inicializar favoritos
+            initFavorites();
 
             // Inicializar URL state y aplicar estado desde URL
             initURLState();
@@ -93,6 +97,52 @@
      */
     function initCharts(stats) {
         window.chartManager.initAll(stats);
+    }
+
+    /**
+     * Inicializa el sistema de favoritos
+     */
+    function initFavorites() {
+        updateFavoritesCount();
+
+        // Callback cuando cambian los favoritos
+        window.favoritesManager.onChange(() => {
+            updateFavoritesCount();
+            // Si estamos mostrando favoritos, refrescar
+            if (appState.showingFavorites) {
+                showFavorites();
+            }
+        });
+
+        // Boton ver favoritos
+        const btnFavorites = document.getElementById('btn-show-favorites');
+        btnFavorites.addEventListener('click', () => {
+            appState.showingFavorites = !appState.showingFavorites;
+            btnFavorites.classList.toggle('active', appState.showingFavorites);
+
+            if (appState.showingFavorites) {
+                showFavorites();
+            } else {
+                // Volver a mostrar todos
+                updateResults();
+            }
+        });
+    }
+
+    /**
+     * Actualiza el contador de favoritos
+     */
+    function updateFavoritesCount() {
+        const countEl = document.getElementById('favorites-count');
+        countEl.textContent = window.favoritesManager.count();
+    }
+
+    /**
+     * Muestra solo los favoritos
+     */
+    function showFavorites() {
+        const favoriteItems = window.favoritesManager.filterFavorites(appState.items);
+        window.tableManager.updateFilteredData(favoriteItems);
     }
 
     /**
@@ -207,6 +257,12 @@
      * Actualiza los resultados combinando busqueda y filtros
      */
     function updateResults(searchResults = null, skipURLSync = false) {
+        // Si estamos en modo favoritos, desactivarlo al buscar/filtrar
+        if (appState.showingFavorites && searchResults !== null) {
+            appState.showingFavorites = false;
+            document.getElementById('btn-show-favorites').classList.remove('active');
+        }
+
         let results;
 
         // Si hay resultados de busqueda, usarlos como base

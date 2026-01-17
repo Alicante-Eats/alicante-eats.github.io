@@ -83,6 +83,12 @@
                 </div>
 
                 <button id="btn-clear-filters" class="btn-secondary">Limpiar filtros</button>
+                <button id="btn-show-favorites" class="btn-favorites" title="Ver mis favoritos">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                    <span>Favoritos (<span id="favorites-count">0</span>)</span>
+                </button>
             </div>
 
             <!-- Share Bar -->
@@ -130,6 +136,7 @@
                 <table id="items-table">
                     <thead>
                         <tr>
+                            <th class="col-fav" title="Favoritos"></th>
                             <th data-sort="name">Nombre <span class="sort-icon"></span></th>
                             <th data-sort="description" class="hide-mobile">Descripcion <span class="sort-icon"></span></th>
                             <th data-sort="price">Precio <span class="sort-icon"></span></th>
@@ -199,6 +206,7 @@
     <script src="js/search.js"></script>
     <script src="js/filters.js"></script>
     <script src="js/charts.js"></script>
+    <script src="js/favorites.js"></script>
     <script src="js/url-state.js"></script>
     <script src="js/app.js"></script>
 </body>
