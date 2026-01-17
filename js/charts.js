@@ -5,8 +5,8 @@ class ChartManager {
     constructor() {
         this.charts = {};
         this.colors = {
-            primary: 'rgba(230, 57, 70, 0.7)',
-            primaryBorder: 'rgba(230, 57, 70, 1)',
+            primary: 'rgba(212, 165, 116, 0.7)',
+            primaryBorder: 'rgba(212, 165, 116, 1)',
             secondary: 'rgba(69, 123, 157, 0.7)',
             secondaryBorder: 'rgba(69, 123, 157, 1)',
             accent: 'rgba(168, 218, 220, 0.7)',

@@ -231,6 +231,80 @@ a:hover {
     color: white;
 }
 
+/* === Share Bar === */
+.share-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    flex-wrap: wrap;
+}
+
+.share-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-right: 0.5rem;
+}
+
+.share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-color);
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+}
+
+.share-btn:hover {
+    background: var(--card-bg);
+    border-color: var(--secondary-color);
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+
+.share-btn svg {
+    flex-shrink: 0;
+}
+
+.share-btn.copied {
+    background: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.share-whatsapp:hover {
+    background: #25D366;
+    border-color: #25D366;
+    color: white;
+}
+
+.share-telegram:hover {
+    background: #0088cc;
+    border-color: #0088cc;
+    color: white;
+}
+
+.share-twitter:hover {
+    background: #000000;
+    border-color: #000000;
+    color: white;
+}
+
+.share-email:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
 /* === Results Info === */
 .results-info {
     padding: 0.75rem 0;

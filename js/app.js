@@ -36,6 +36,9 @@
             // Configurar listeners
             setupEventListeners();
 
+            // Inicializar URL state y aplicar estado desde URL
+            initURLState();
+
             showLoading(false);
             console.log('Alicante Eats cargado correctamente');
 
@@ -93,6 +96,66 @@
     }
 
     /**
+     * Inicializa el gestor de URL y aplica estado inicial
+     */
+    function initURLState() {
+        window.urlStateManager.init();
+
+        // Callback cuando cambia el estado desde URL (boton atras/adelante)
+        window.urlStateManager.onStateChange = (state) => {
+            applyStateToUI(state);
+        };
+
+        // Aplicar estado inicial desde URL
+        const initialState = window.urlStateManager.getStateFromURL();
+        if (initialState.search || initialState.store || initialState.minPrice !== null || initialState.maxPrice !== null) {
+            applyStateToUI(initialState);
+        }
+    }
+
+    /**
+     * Aplica un estado a la UI (desde URL)
+     */
+    function applyStateToUI(state) {
+        // Aplicar busqueda
+        const searchInput = document.getElementById('search-input');
+        searchInput.value = state.search || '';
+        if (state.search) {
+            window.searchEngine.search(state.search);
+        } else {
+            window.searchEngine.clear();
+        }
+
+        // Aplicar filtros
+        document.getElementById('filter-store').value = state.store || '';
+        document.getElementById('filter-min-price').value = state.minPrice !== null ? state.minPrice : '';
+        document.getElementById('filter-max-price').value = state.maxPrice !== null ? state.maxPrice : '';
+
+        // Actualizar estado interno de filtros
+        window.filterManager.activeFilters = {
+            store: state.store || null,
+            minPrice: state.minPrice,
+            maxPrice: state.maxPrice
+        };
+
+        // Actualizar resultados (sin re-sincronizar URL)
+        updateResults(null, true);
+    }
+
+    /**
+     * Sincroniza el estado actual con la URL
+     */
+    function syncURLState() {
+        const state = {
+            search: window.searchEngine.getLastQuery(),
+            store: window.filterManager.activeFilters.store,
+            minPrice: window.filterManager.activeFilters.minPrice,
+            maxPrice: window.filterManager.activeFilters.maxPrice
+        };
+        window.urlStateManager.updateURL(state);
+    }
+
+    /**
      * Inicializa las listas de top items
      */
     function initTopLists(stats) {
@@ -143,7 +206,7 @@
     /**
      * Actualiza los resultados combinando busqueda y filtros
      */
-    function updateResults(searchResults = null) {
+    function updateResults(searchResults = null, skipURLSync = false) {
         let results;
 
         // Si hay resultados de busqueda, usarlos como base
@@ -165,6 +228,11 @@
 
         // Actualizar tabla
         window.tableManager.updateFilteredData(results);
+
+        // Sincronizar URL (excepto cuando venimos de la URL)
+        if (!skipURLSync) {
+            syncURLState();
+        }
     }
 
     /**
