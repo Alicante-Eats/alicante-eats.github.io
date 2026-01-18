@@ -53,6 +53,9 @@ class TableManager {
         } else {
             this.tableBody.innerHTML = pageData.map(item => {
                 const isFav = window.favoritesManager && window.favoritesManager.isFavorite(item.id);
+                const hasDescription = item.description && item.description.trim() !== '';
+                const descriptionDisplay = hasDescription ? this.truncateText(item.description, 50) : '-';
+                
                 return `
                 <tr data-id="${item.id}">
                     <td class="col-fav">
@@ -63,7 +66,14 @@ class TableManager {
                         </button>
                     </td>
                     <td>${this.escapeHtml(item.name)}</td>
-                    <td class="hide-mobile">${this.escapeHtml(item.description || '-')}</td>
+                    <td class="hide-mobile">
+                        ${hasDescription ? 
+                            `<span class="tooltip-wrapper">
+                                <span class="description-text">${this.escapeHtml(descriptionDisplay)}</span>
+                                <div class="tooltip">${this.escapeHtml(item.description)}</div>
+                            </span>` 
+                            : '-'}
+                    </td>
                     <td>${item.price.toFixed(2)} EUR</td>
                     <td>${this.escapeHtml(item.store)}</td>
                 </tr>
@@ -77,6 +87,12 @@ class TableManager {
                     this.toggleFavorite(btn, itemId);
                 });
             });
+
+            // Añadir event listeners para tooltips en móvil
+            this.initTooltipListeners();
+            
+            // Añadir event listeners para posicionar tooltips en hover
+            this.initTooltipPositioning();
         }
 
         this.updatePagination();
@@ -226,6 +242,78 @@ class TableManager {
      */
     getFilteredCount() {
         return this.filteredData.length;
+    }
+
+    /**
+     * Trunca texto a un número máximo de caracteres
+     */
+    truncateText(text, maxLength) {
+        if (!text || text.length <= maxLength) return text;
+        return text.substring(0, maxLength).trim() + '...';
+    }
+
+    /**
+     * Inicializa listeners para tooltips en móvil
+     */
+    initTooltipListeners() {
+        const tooltipWrappers = this.tableBody.querySelectorAll('.tooltip-wrapper');
+        
+        tooltipWrappers.forEach(wrapper => {
+            let touchTimer;
+            
+            // Para dispositivos táctiles (móvil)
+            wrapper.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                
+                // Cerrar otros tooltips abiertos
+                document.querySelectorAll('.tooltip-wrapper.active').forEach(w => {
+                    if (w !== wrapper) w.classList.remove('active');
+                });
+                
+                // Long press: activar tooltip después de 500ms
+                touchTimer = setTimeout(() => {
+                    wrapper.classList.add('active');
+                }, 500);
+            });
+            
+            wrapper.addEventListener('touchend', () => {
+                clearTimeout(touchTimer);
+            });
+            
+            wrapper.addEventListener('touchmove', () => {
+                clearTimeout(touchTimer);
+            });
+        });
+        
+        // Cerrar tooltip al tocar fuera (móvil)
+        document.addEventListener('touchstart', (e) => {
+            if (!e.target.closest('.tooltip-wrapper')) {
+                document.querySelectorAll('.tooltip-wrapper.active').forEach(w => {
+                    w.classList.remove('active');
+                });
+            }
+        }, { once: false });
+    }
+
+    /**
+     * Inicializa posicionamiento dinámico de tooltips
+     */
+    initTooltipPositioning() {
+        const tooltipWrappers = this.tableBody.querySelectorAll('.tooltip-wrapper');
+        
+        tooltipWrappers.forEach(wrapper => {
+            const tooltip = wrapper.querySelector('.tooltip');
+            const descText = wrapper.querySelector('.description-text');
+            
+            if (!tooltip || !descText) return;
+            
+            wrapper.addEventListener('mouseenter', () => {
+                const rect = descText.getBoundingClientRect();
+                tooltip.style.left = rect.left + (rect.width / 2) + 'px';
+                tooltip.style.top = (rect.bottom + 10) + 'px';
+                tooltip.style.transform = 'translateX(-50%)';
+            });
+        });
     }
 }
 

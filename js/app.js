@@ -21,6 +21,9 @@
         try {
             showLoading(true);
 
+            // Inicializar tema lo antes posible para evitar flash
+            initTheme();
+
             // Cargar datos
             const data = await window.dataLoader.loadAll();
             appState.items = data.items;
@@ -127,6 +130,15 @@
                 updateResults();
             }
         });
+    }
+
+    /**
+     * Inicializa el gestor de tema
+     */
+    function initTheme() {
+        if (window.themeManager) {
+            window.themeManager.init();
+        }
     }
 
     /**

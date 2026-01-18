@@ -16,6 +16,22 @@
     --transition: 0.3s ease;
 }
 
+/* === Dark Theme === */
+[data-theme="dark"] {
+    --primary-color: #d4a574;
+    --primary-dark: #c0986b;
+    --secondary-color: #64a0c8;
+    --secondary-dark: #8eb8d6;
+    --accent-color: #5a8ca0;
+    --bg-color: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --text-color: #e8e8e8;
+    --text-muted: #a0a0a0;
+    --border-color: #404040;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
 /* === Reset & Base === */
 * {
     box-sizing: border-box;
@@ -61,6 +77,7 @@ a:hover {
     padding: 2.5rem 0;
     text-align: center;
     box-shadow: var(--shadow);
+    position: relative;
 }
 
 .header h1 {
@@ -189,7 +206,8 @@ a:hover {
     font-size: 0.95rem;
     border: 1px solid var(--border-color);
     border-radius: 4px;
-    background: white;
+    background: var(--card-bg);
+    color: var(--text-color);
     transition: border-color var(--transition);
 }
 
@@ -314,8 +332,8 @@ a:hover {
     font-size: 0.9rem;
     font-weight: 500;
     color: var(--text-color);
-    background: white;
-    border: 2px solid var(--border-color);
+    background: var(--card-bg);
+    border: 2px solid #e74c3c;
     border-radius: var(--border-radius);
     cursor: pointer;
     transition: all var(--transition);
@@ -323,8 +341,9 @@ a:hover {
 }
 
 .btn-favorites:hover {
+    background: #e74c3c;
     border-color: #e74c3c;
-    color: #e74c3c;
+    color: white;
 }
 
 .btn-favorites.active {
@@ -335,6 +354,17 @@ a:hover {
 
 .btn-favorites svg {
     flex-shrink: 0;
+}
+
+[data-theme="dark"] .btn-favorites {
+    border-color: #e74c3c;
+    color: #e74c3c;
+}
+
+[data-theme="dark"] .btn-favorites:hover,
+[data-theme="dark"] .btn-favorites.active {
+    background: #e74c3c;
+    color: white;
 }
 
 .btn-fav {
@@ -383,6 +413,7 @@ a:hover {
 
 .table-container {
     overflow-x: auto;
+    overflow-y: visible;
     background: var(--card-bg);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
@@ -410,6 +441,7 @@ a:hover {
     position: sticky;
     top: 0;
     white-space: nowrap;
+    z-index: 100;
 }
 
 #items-table th:hover {
@@ -448,6 +480,7 @@ a:hover {
 
 #items-table tbody tr {
     transition: background var(--transition);
+    position: relative;
 }
 
 #items-table tbody tr:hover {
@@ -462,10 +495,10 @@ a:hover {
 
 #items-table td:nth-child(3) {
     max-width: 300px;
+    color: var(--text-muted);
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
-    color: var(--text-muted);
 }
 
 /* === Pagination === */
@@ -718,5 +751,124 @@ a:hover {
 
     .header h1 {
         font-size: 1.5rem;
+    }
+}
+
+/* === Theme Toggle === */
+.theme-toggle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition);
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(20deg) scale(1.05);
+}
+
+.theme-toggle:active {
+    transform: rotate(20deg) scale(0.95);
+}
+
+[data-theme="dark"] .theme-toggle {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .theme-toggle:hover {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* === Tooltip === */
+.tooltip-wrapper {
+    position: static;
+    display: inline-block;
+    cursor: help;
+}
+
+.description-text {
+    border-bottom: 1px dotted var(--secondary-color);
+    transition: border-color var(--transition);
+    padding-bottom: 1px;
+    position: relative;
+}
+
+.tooltip-wrapper:hover .description-text {
+    border-bottom-color: var(--primary-color);
+    border-bottom-width: 2px;
+}
+
+.tooltip {
+    position: fixed;
+    margin-top: 10px;
+    background: var(--secondary-dark);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    white-space: normal;
+    max-width: 300px;
+    min-width: 200px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+}
+
+[data-theme="dark"] .tooltip {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-bottom-color: var(--secondary-dark);
+}
+
+[data-theme="dark"] .tooltip::after {
+    border-bottom-color: var(--card-bg);
+}
+
+.tooltip-wrapper:hover .tooltip,
+.tooltip-wrapper.active .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Ajustar tooltip en mobile */
+@media (max-width: 768px) {
+    .tooltip {
+        position: fixed;
+        bottom: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 90vw;
+        width: auto;
+    }
+
+    .tooltip::after {
+        display: none;
     }
 }
